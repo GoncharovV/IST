@@ -1,4 +1,6 @@
-import { Operand } from './operand';
+import { Operand } from './utils/operand';
+import { convertToPostfixNotation } from './tools/convert-to-postfix-notation';
+import { calculatePostfixNotation } from './tools/calculate-postfix-notation';
 
 export class Calculator {
     private expression: Operand[] = [new Operand()]
@@ -6,8 +8,7 @@ export class Calculator {
     public getExpression(): string {
         return this.expression
             .map(operand => operand.value)
-            .join(' ')
-            .replace('*', '×');
+            .join(' ');
     }
 
     private get lastOperandIndex() {
@@ -31,7 +32,8 @@ export class Calculator {
     }
 
     public addDigit(digit: number) {
-        if (this.currentOperand.isEmptyOrNumber() || this.currentOperand.isMinus()) {
+        // || this.currentOperand.isMinus()
+        if (this.currentOperand.isEmptyOrNumber()) {
             if (this.currentOperand.value === '0') {
                 this.currentOperand.value += '.';
             }
@@ -54,7 +56,7 @@ export class Calculator {
     }
 
     private deleteLastOperand() {
-        this.expression = this.expression.splice(0, this.expression.length - 1);
+        this.expression.pop();
     }
 
     public addPoint() {
@@ -78,7 +80,8 @@ export class Calculator {
             return;
         }
 
-        if (this.currentOperand.isNumber() || this.currentOperand.isEmpty() && operator === '-') {
+        // this.currentOperand.isEmpty() && operator === '-'
+        if (this.currentOperand.isNumber()) {
             this.currentOperand.finalize();
 
             this.expression.push(new Operand(operator))
@@ -109,10 +112,18 @@ export class Calculator {
 
             this.expression.push(new Operand('*'));
             this.expression.push(new Operand('('))
+            return;
         }
 
-        if (this.currentOperand.isOperator()) {
+        if (this.currentOperand.isOperator() || this.currentOperand.isOpeningBrace()) {
             this.expression.push(new Operand('('))
+            return;
+        }
+
+        if (this.currentOperand.isClosingBrace()) {
+            this.expression.push(new Operand('*'));
+            this.expression.push(new Operand('('))
+            return;
         }
     }
 
@@ -132,9 +143,9 @@ export class Calculator {
         }
     }
 
-    public calculate() {
+    public calculate(): number {
         if (this.expression.length < 3) {
-            return;
+            throw new Error();
         }
 
         if (this.currentOperand.isOperator()) {
@@ -143,6 +154,13 @@ export class Calculator {
 
         this.autoCloseBraces();
 
+        const result = calculatePostfixNotation(
+            convertToPostfixNotation(this.expression)
+        );
+
+        this.expression = [new Operand(result.toString())]
+
+        return result
     }
 
     private autoCloseBraces() {

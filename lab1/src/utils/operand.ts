@@ -2,9 +2,9 @@ export class Operand {
     public value = '';
 
     public constructor(
-        value: string = '',
+        initial: string = '',
     ) {
-        this.value = value;
+        this.value = initial;
     }
 
     public isNumber(): boolean {
@@ -59,14 +59,14 @@ export class Operand {
         }
 
         if (this.value === '+' || this.value === '-') {
-            return 1;
+            return 2;
         }
 
         if (this.value === '(') {
             return 1;
         }
 
-        return 0;
+        throw new Error(this.value)
     }
 
 }
