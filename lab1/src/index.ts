@@ -1,49 +1,39 @@
 import { Calculator } from './calculator';
+import { HtmlViewVisualizer } from './html-view-visualizer';
 
-const expression = document.getElementById('expression')!;
-const main = document.getElementById('main-line')!;
+const primaryField = document.getElementById('main-line')!;
+const expressionField = document.getElementById('expression')!;
 
 const calculator = new Calculator();
+const visualizer = new HtmlViewVisualizer(primaryField, expressionField);
 
-const clear = () => {
-    calculator.clear();
-
-    main.innerText = '';
-    expression.innerText = '';
+const withViewUpdate = (func: () => void) => () => {
+        func();
+        visualizer.updatePrimaryField(calculator.getExpression());
 }
 
 const calculate = () => {
     try {
         const result = calculator.calculate();
 
-        const expressionText = main.innerText;
-
-        main.innerText = result.toString();
-        expression.innerText = expressionText;
+        visualizer.showResult(result);
     } catch (error: unknown) {
         const message = (error as Error).message
 
         if (message) {
-            clear()
-
-            main.innerText = message;
+            calculator.clear();
+            visualizer.showError(message);
         }
     }
 }
 
+const clear = () => {
+    calculator.clear();
 
-
-const withViewUpdate = (func: () => void) => {
-    return () => {
-        func();
-
-        console.log(calculator.getExpression());
-
-        main.innerText = calculator.getExpression().replaceAll('*', '×');
-    }
+    visualizer.clearView();
 }
 
-const map = {
+const numbersTable = {
     num0: withViewUpdate(() => calculator.addDigit(0)),
     num1: withViewUpdate(() => calculator.addDigit(1)),
     num2: withViewUpdate(() => calculator.addDigit(2)),
@@ -54,6 +44,9 @@ const map = {
     num7: withViewUpdate(() => calculator.addDigit(7)),
     num8: withViewUpdate(() => calculator.addDigit(8)),
     num9: withViewUpdate(() => calculator.addDigit(9)),
+}
+
+const handlerByIdTable = {
     plus: withViewUpdate(() => calculator.addOperator('+')),
     minus: withViewUpdate(() => calculator.addOperator('-')),
     divide: withViewUpdate(() => calculator.addOperator('/')),
@@ -66,11 +59,44 @@ const map = {
     calculate: () => calculate(),
 }
 
-for (const [id, handler] of Object.entries(map)) {
-    document.getElementById(id)!.onclick = handler;
+const registerButtonsEventListeners = () => {
+    for (const [id, handler] of Object.entries({ ...handlerByIdTable, ...numbersTable })) {
+        document.getElementById(id)!.onclick = handler;
+    }
 }
 
+const registerKeyboardEventListeners = () => {
+    window.addEventListener('keypress', (event) => {
+        const idKey = `num${event.key}` as keyof typeof numbersTable;
 
-// ['(', '8', '+', '2', '*', '5', ')', '/', '(', '1', '+', '3', '*', '2', '-', '4', ')'].forEach(elem => {
-//     this.expression.push(new Operand(elem))
-// })
+        if (Object.keys(numbersTable).includes(idKey)) {
+            numbersTable[idKey]();
+        }
+    })
+}
+
+const registerThemeSwitcher = () => {
+    const btn = document.getElementById('theme-switcher')!;
+
+    btn.onclick = () => {
+        document.querySelector('body')!.classList.toggle('dark')
+    }
+}
+
+const main = () => {
+    registerButtonsEventListeners();
+
+    registerKeyboardEventListeners();
+
+    registerThemeSwitcher();
+}
+
+main()
+
+
+
+
+
+
+
+

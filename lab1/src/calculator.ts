@@ -1,6 +1,7 @@
 import { Operand } from './utils/operand';
 import { convertToPostfixNotation } from './tools/convert-to-postfix-notation';
 import { calculatePostfixNotation } from './tools/calculate-postfix-notation';
+import { Operators } from './types';
 
 export class Calculator {
     private expression: Operand[] = [new Operand()]
@@ -32,7 +33,6 @@ export class Calculator {
     }
 
     public addDigit(digit: number) {
-        // || this.currentOperand.isMinus()
         if (this.currentOperand.isEmptyOrNumber()) {
             if (this.currentOperand.value === '0') {
                 this.currentOperand.value += '.';
@@ -74,13 +74,18 @@ export class Calculator {
         }
     }
 
-    public addOperator(operator: string) {
+    public addOperator(operator: Operators) {
         if (this.currentOperand.isOperator()) {
             this.currentOperand.value = operator;
             return;
         }
 
-        // this.currentOperand.isEmpty() && operator === '-'
+        if (this.expression.length === 1 && operator === '-') {
+            this.expression.push(new Operand('0'));
+            this.expression.push(new Operand('-'));
+            return;
+        }
+
         if (this.currentOperand.isNumber()) {
             this.currentOperand.finalize();
 
@@ -170,6 +175,5 @@ export class Calculator {
             this.expression.push(new Operand(')'))
         }
     }
-
 
 }

@@ -26,6 +26,8 @@
     align-items: end;
 
     padding: 15px 20px;
+
+    transition: var(--transition-default);
 }
 
 .screen > #main-line {

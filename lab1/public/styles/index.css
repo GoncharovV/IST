@@ -1,10 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
 @import "calculator.css";
-
 @import "buttons.css";
-
-
+@import "theme-switcher.css";
 
 * {
     margin: 0;
@@ -17,13 +15,56 @@ body {
     min-height: 100vh;
 
     display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background: rgb(193,57,69);
-    background: linear-gradient(135deg, rgba(193,57,69,1) 0%, rgba(238,138,65,1) 51%);
+    flex-direction: column;
 
     font-family: 'Roboto', Open-Sans, sans-serif;
+}
+
+body::after, body::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    transition: var(--transition-default);
+}
+
+body::before {
+    background: linear-gradient(135deg, rgba(193,57,69,1) 0%, rgba(238,138,65,1)  51%);
+}
+
+body::after {
+    background: linear-gradient(135deg, #232222 0%, rgb(66, 64, 64) 51%);
+}
+
+body::before {
+    opacity: 1;
+}
+
+body::after {
+    opacity: 0;
+}
+
+body.dark::before {
+    opacity: 0;
+}
+
+body.dark::after {
+    opacity: 1;
+}
+
+
+header {
+    display: flex;
+    justify-content: end;
+    padding: 20px 20px;
+}
+
+main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
 }
 
 button {
@@ -39,6 +80,18 @@ button {
     --color-secondary: rgba(193,57,69,1);
     --color-numbers: #fff;
 
+    --color-main-gradient-1: rgba(193,57,69,1);
+    --color-main-gradient-2: rgba(238,138,65,1);
+
     --border-radius-default: 10px;
 
+    --transition-default: all 2s ease;
 }
+
+.dark {
+    --color-display-bg: #b09f9f;
+    --color-primary: rgb(171, 94, 42);
+    --color-secondary: rgb(121, 24, 36);
+    --color-numbers: #c9bcbc;
+}
+

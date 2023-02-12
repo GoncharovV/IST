@@ -1,7 +1,8 @@
 const path = require('path');
-const HTMLWebpackPlugin = require('html-webpack-plugin')
-const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const HTMLWebpackPlugin = require('html-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 
 module.exports = {
     entry: ['./src/index.ts', './public/styles/index.css'],
@@ -16,7 +17,7 @@ module.exports = {
             {
                 test: /\.css$/i,
                 use: [MiniCssExtractPlugin.loader, "css-loader"],
-            }
+            },
         ],
     },
     resolve: {
@@ -28,12 +29,13 @@ module.exports = {
     },
     plugins: [
         new HTMLWebpackPlugin({
-            template: './public/index.html'
+            template: path.resolve('public', 'index.html'),
         }),
         new CleanWebpackPlugin(),
         new MiniCssExtractPlugin({
             filename: 'main.[hash].css',
-        })
+        }),
+        new FaviconsWebpackPlugin(path.resolve('public', 'assets', 'favicon.png')),
     ],
     devServer: {
         port: 3000,

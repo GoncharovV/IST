@@ -8,11 +8,17 @@ export class Operand {
     }
 
     public isNumber(): boolean {
+        if (this.isEmpty()) {
+            return false;
+        }
+
         return !isNaN(Number(this.value));
     }
 
     public isOperator(): boolean {
-        return !this.isNumber() && this.isNotEmpty() && !this.isBrace();
+        const operators = ['+', '-', '/', '*']
+
+        return operators.includes(this.value);
     }
 
     public isMinus(): boolean {
