@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1>Hello world!</h1>
+
+    <main>
+
+        <div class="controls">
+            <input id="countInput" type="text" placeholder="Количество">
+        </div>
+
+        <div class="cards-wrapper">
+
+            <% cards.forEach(card => { %>
+                <a href="/cards/<%= card.id %>">
+                    <div class="card">
+
+                        <h5> <%= card.title %> </h5>
+                    </div>
+                </a>
+            <% }) %>
+
+        </div>
+
+    </main>
+
+<script>
+    const input = document.getElementById('countInput')
+
+    const throttle = (callback, time) => {
+        let timeout = null;
+
+        return (...args) => {
+            if (timeout) {
+                clearTimeout(timeout)
+            }
+
+            timeout = setTimeout(() => {
+                callback(args)
+            }, time)
+        }
+    }
+
+    const redirect = throttle(() => {
+        window.location.replace(`${window.location.href}?limit=${input.value}`)
+    }, 500)
+
+    input.addEventListener('input', () => redirect())
+</script>
+
+
+</body>
+</html>
