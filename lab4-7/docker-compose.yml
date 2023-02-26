@@ -29,6 +29,13 @@ services:
     networks:
       - postgres
 
+  server:
+    build: ./server
+    ports:
+      - "5000:5000"
+    networks:
+      - postgres
+
 networks:
   postgres:
     driver: bridge

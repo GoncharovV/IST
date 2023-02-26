@@ -80,7 +80,7 @@ export class Calculator {
             return;
         }
 
-        if (this.expression.length === 1 && operator === '-') {
+        if (this.expression.length === 1 && operator === '-' && this.currentOperand.isEmpty()) {
             this.expression.push(new Operand('0'));
             this.expression.push(new Operand('-'));
             return;
@@ -101,6 +101,7 @@ export class Calculator {
             if (this.currentOperand.isOpeningBrace() && operator !== '-') {
                 return;
             } else if (operator === '-') {
+                this.expression.push(new Operand('0'))
                 this.expression.push(new Operand('-'))
             }
         }
