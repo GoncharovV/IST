@@ -4,7 +4,7 @@ services:
     container_name: postgres_container
     image: postgres:15.2
     environment:
-      POSTGRES_DB: "postgres"
+      POSTGRES_DB: "dockered"
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "root"
       PGDATA: "/var/lib/postgresql/data/pgdata"
@@ -15,26 +15,34 @@ services:
     networks:
       - postgres
 
-  pgadmin:
-    container_name: pgadmin_container
-    image: dpage/pgadmin4:latest
-    environment:
-      PGADMIN_DEFAULT_EMAIL: "v@gmail.com"
-      PGADMIN_DEFAULT_PASSWORD: "root"
-      PGADMIN_CONFIG_SERVER_MODE: "False"
-    volumes:
-      - ./database/pgadmin:/var/lib/pgadmin
-    ports:
-      - "5050:80"
-    networks:
-      - postgres
+#  pgadmin:
+#    container_name: pgadmin_container
+#    image: dpage/pgadmin4:latest
+#    environment:
+#      PGADMIN_DEFAULT_EMAIL: "v@gmail.com"
+#      PGADMIN_DEFAULT_PASSWORD: "root"
+#      PGADMIN_CONFIG_SERVER_MODE: "False"
+#    volumes:
+#      - ./database/pgadmin:/var/lib/pgadmin
+#    ports:
+#      - "5050:80"
+#    networks:
+#      - postgres
 
   server:
-    build: ./server
+    build:
+      context: ./server
+      dockerfile: ./Dockerfile
+      target: development
+    command: npm run start:dev db-filler
+    volumes:
+      - ./server:/app
     ports:
-      - "5000:5000"
-    networks:
-      - postgres
+      - '5000:5000'
+    env_file:
+      - ./server/apps/db-filler/.env
+#    depends_on:
+#      - postgres
 
 networks:
   postgres:

@@ -1,21 +1,28 @@
-FROM node:alpine as builder
+FROM node:alpine AS development
+
+WORKDIR /app
+
+COPY package*.json .
+
+RUN npm install --only=production
+
+COPY . .
+
+RUN npm run build
+
+FROM node:alpine AS production
+
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
 
 WORKDIR /app
 
 COPY package*.json ./
+
 RUN npm ci
 
-COPY  . .
-RUN npm run build && npm prune --production
+COPY . .
 
-# ---
+COPY --from=development /app/dist ./dist
 
-FROM node:alpine
-
-WORKDIR /app
-
-COPY --from=builder /app .
-
-#RUN npm run start:prod
-
-CMD ["node", "dist/main.js"]
+CMD ["node", "dist/apps/db-filler/main"]
