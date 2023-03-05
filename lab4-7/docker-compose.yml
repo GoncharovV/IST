@@ -1,49 +1,67 @@
-version: "3.9"
+version: '3.0'
+
 services:
-  postgres:
-    container_name: postgres_container
-    image: postgres:15.2
-    environment:
-      POSTGRES_DB: "dockered"
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "root"
-      PGDATA: "/var/lib/postgresql/data/pgdata"
-    volumes:
-      - ./database:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    networks:
-      - postgres
-
-#  pgadmin:
-#    container_name: pgadmin_container
-#    image: dpage/pgadmin4:latest
-#    environment:
-#      PGADMIN_DEFAULT_EMAIL: "v@gmail.com"
-#      PGADMIN_DEFAULT_PASSWORD: "root"
-#      PGADMIN_CONFIG_SERVER_MODE: "False"
-#    volumes:
-#      - ./database/pgadmin:/var/lib/pgadmin
-#    ports:
-#      - "5050:80"
-#    networks:
-#      - postgres
-
   server:
+    container_name: server
     build:
       context: ./server
       dockerfile: ./Dockerfile
-      target: development
-    command: npm run start:dev db-filler
-    volumes:
-      - ./server:/app
-    ports:
-      - '5000:5000'
     env_file:
-      - ./server/apps/db-filler/.env
-#    depends_on:
-#      - postgres
+      - ./server/.env
+    volumes:
+      - ./server:/app/server
+      - /app/server/node_modules
+    ports:
+      - 5000:5000
+    command: npm run start:dev
+    depends_on:
+      - postgres
+    restart: always
 
-networks:
   postgres:
-    driver: bridge
+    container_name: postgres
+    image: postgres:12
+    env_file:
+      - ./server/.env
+    environment:
+      PG_DATA: /var/lib/postgresql/data
+      POSTGRES_DB: "database"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "root"
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "v@gmail.com"
+      PGADMIN_DEFAULT_PASSWORD: "root"
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - .pgadmin:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+
+  client:
+    container_name: client
+    build:
+      context: ./client
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./client:/app/client
+      - /app/client/node_modules
+    ports:
+      - 3000:3000
+    command: npm run start
+    depends_on:
+      - server
+    restart: always
+
+volumes:
+  pgdata:
+  pdadmin:
+
