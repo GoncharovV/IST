@@ -9,6 +9,7 @@ interface ProductCreationAttrs {
     userId: number;
     categoryId: number;
     image: string;
+    price: number;
 }
 
 @Table({tableName: 'products'})
@@ -28,6 +29,10 @@ export class Product extends Model<Product, ProductCreationAttrs> {
     @ApiProperty({example: 'yandex.ru', description: 'Ссылка на изображение товара'})
     @Column({type: DataType.STRING})
     image: string;
+
+    @ApiProperty({example: 1200, description: 'Цена товара'})
+    @Column({type: DataType.NUMBER})
+    price: number;
 
     @ForeignKey(() => User)
     @Column({type: DataType.INTEGER})

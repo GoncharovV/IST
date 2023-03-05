@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Badge, Button, Card, CardGroup, Col, Container, Row } from 'react-bootstrap';
+import { Alert, Badge, Button, Card, CardGroup, Col, Container, Form, InputGroup, Row } from 'react-bootstrap';
 import ProductModal from './ProductModal';
 import axios from 'axios';
 import { API_SOURCE } from '../../index';
@@ -11,18 +11,26 @@ const ProductsPage = () => {
 
     const [modal, setModal] = useState(false)
 
+    const [minPrice, setMinPrice] = useState<any>(0)
+    const [maxPrice, setMaxPrice] = useState<any>(15000)
+
 
     const [currentEdit, setCurrentEdit] = useState<any>(null)
 
     const loadProducts = async () => {
-        const products = await axios.get('http://localhost:5000/products');
+        const products = await axios.get(API_SOURCE + '/products', {
+            params: {
+                minPrice,
+                maxPrice
+            }
+        });
 
         setProducts(products.data)
     }
 
     useEffect(() => {
         loadProducts();
-    }, [])
+    }, [maxPrice, minPrice])
 
     const hideModal = () => {
         setModal(false)
@@ -45,7 +53,7 @@ const ProductsPage = () => {
         const confirmed = window.confirm('Удалить?');
 
         if (confirmed) {
-            await axios.delete(API_SOURCE + '/products/'+id);
+            await axios.delete(API_SOURCE + '/products/' + id);
             loadProducts()
         }
 
@@ -55,9 +63,19 @@ const ProductsPage = () => {
         <Container>
             <h1>Товары</h1>
 
-            <Alert variant='success'>
-                <Button variant="primary" onClick={openModal}>Добавить новый товар</Button>
+            <Alert variant="success">
+
                 <ProductModal show={modal} onHide={hideModal} edit={!!currentEdit} product={currentEdit}/>
+
+                <InputGroup className="mb-3">
+                    <Button variant="primary" onClick={openModal}>Добавить новый товар</Button>
+                    <InputGroup.Text>Минимальная цена</InputGroup.Text>
+                    <Form.Control type="number" placeholder="Минимальная цена" name="minPrice"
+                                  onChange={e => setMaxPrice(e.target.value)} value={minPrice}/>
+                    <InputGroup.Text>Максимальная цена</InputGroup.Text>
+                    <Form.Control type="number" placeholder="Максимальная цена" name="maxPrice"
+                                  onChange={e => setMaxPrice(e.target.value)} value={maxPrice}/>
+                </InputGroup>
             </Alert>
 
             <Row xs={1} md={4} className="g-4">
@@ -65,24 +83,27 @@ const ProductsPage = () => {
                     products.map((product) => (
                         <Col key={product.id}>
                             <Card style={{ width: '18rem' }}>
-                                <Card.Img variant="top" src={ product.image } />
+                                <Card.Img variant="top" src={product.image}/>
                                 <Card.Body>
                                     <Card.Title>{product.title}</Card.Title>
                                     <Card.Text>
-                                        {product.description} <br />
+                                        {product.description} <br/>
 
-                                        Категория: <Badge bg='success'>{product.category.name}</Badge><br />
-                                        Владелец: <Badge bg='info'>{product.creator.email}</Badge>
+                                        Категория: <Badge bg="success">{product.category.name}</Badge><br/>
+                                        Владелец: <Badge bg="info">{product.creator.name}</Badge><br/>
+                                        Цена: <Badge bg="danger">{product.price}</Badge>
 
                                     </Card.Text>
 
                                     <Row>
                                         <Col>
-                                            <Button variant="outline-danger" onClick={() => deleteProduct(product.id)}>Удалить</Button>
+                                            <Button variant="outline-danger"
+                                                    onClick={() => deleteProduct(product.id)}>Удалить</Button>
                                         </Col>
 
                                         <Col>
-                                            <Button variant="outline-secondary" onClick={() => openEditModal(product)}>Редактировать</Button>
+                                            <Button variant="outline-secondary"
+                                                    onClick={() => openEditModal(product)}>Редактировать</Button>
                                         </Col>
                                     </Row>
 

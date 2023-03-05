@@ -11,6 +11,7 @@ const defaultValue = {
     description: '',
     categoryId: -1,
     userId: -1,
+    price: 0,
     image: 'https://sun9-80.userapi.com/impf/c840332/v840332687/2f931/ataVAsLIxsY.jpg?size=604x403&quality=96&sign=de1d9271c75fc1297005c77d4e769bb7&type=album',
 }
 
@@ -51,6 +52,7 @@ const ProductModal: React.FC<any> = ({show, onHide, product}) => {
         }
 
         setTimeout(() => onHide(), 100)
+        setFormValue(defaultValue)
     }
 
     const getCategories = async () => {
@@ -121,6 +123,11 @@ const ProductModal: React.FC<any> = ({show, onHide, product}) => {
                                 ))
                             }
                         </Form.Select>
+                    </Form.Group>
+
+                    <Form.Group className="mb-3" controlId="description">
+                        <Form.Label>Цена</Form.Label>
+                        <Form.Control type="number" placeholder="Цена" name='price' onChange={handleChange} value={formValue.price}/>
                     </Form.Group>
 
                     <Form.Group className="mb-3" controlId="description">

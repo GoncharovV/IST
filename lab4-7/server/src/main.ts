@@ -4,7 +4,7 @@ import { configureSwagger } from './swagger-config';
 
 
 async function start() {
-    const PORT = process.env.PORT || 5000;
+    const PORT = 3001// process.env.PORT || 6000;
     const app = await NestFactory.create(AppModule);
 
     configureSwagger(app);

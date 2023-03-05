@@ -45,6 +45,7 @@ const ProductModal: React.FC<any> = ({show, onHide, category}) => {
             await create()
         }
 
+        setFormValue(defaultValue)
         onHide();
     }
 

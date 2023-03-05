@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UploadedFile, UseInterceptors } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Post,
+    Put,
+    Query,
+    Req,
+    UploadedFile,
+    UseInterceptors
+} from '@nestjs/common';
 import { CreateProductDto, UpdateProductDto } from './DTO/create-product.dto';
 import { ProductsService } from './products.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -27,8 +39,12 @@ export class ProductsController {
     @ApiOperation({summary: 'Получить все товары'})
     @ApiResponse({status: 200, type: [Product]})
     @Get()
-    public getAll() {
-        return this.productsService.getAll();
+    public getAll(@Query() query: {minPrice: string, maxPrice: string}) {
+        // console.log('FILTERS', query)
+        const minPrice = Number(query.minPrice || 0)
+        const maxPrice = Number(query.maxPrice || 0)
+
+        return this.productsService.getAll(minPrice, maxPrice);
     }
 
     @ApiOperation({summary: 'Изменить товар'})
@@ -43,7 +59,6 @@ export class ProductsController {
     @Delete(':id')
     public delete(@Param('id') id: string) {
         return this.productsService.delete(+id)
-
     }
 
 }

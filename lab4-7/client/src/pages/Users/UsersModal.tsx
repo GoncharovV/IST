@@ -46,6 +46,8 @@ const UsersModal: React.FC<any> = ({show, onHide, user}) => {
         }
 
         setTimeout(() => onHide(), 100)
+
+        setFormValue(defaultValue)
     }
 
     return (

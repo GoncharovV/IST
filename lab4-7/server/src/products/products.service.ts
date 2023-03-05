@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { CreateProductDto, UpdateProductDto } from './DTO/create-product.dto';
-import {InjectModel} from "@nestjs/sequelize";
-import {Product} from "./prodcut.model";
+import { InjectModel } from '@nestjs/sequelize';
+import { Product } from './prodcut.model';
 import { User } from '../users/users.model';
 import { Category } from '../categories/category.model';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class ProductsService {
@@ -11,7 +12,8 @@ export class ProductsService {
     public constructor(
         @InjectModel(Product)
         private readonly productRepository: typeof Product,
-    ) {}
+    ) {
+    }
 
     public async create(dto: CreateProductDto) {
         const product = await this.productRepository.create({
@@ -21,8 +23,15 @@ export class ProductsService {
         return product;
     }
 
-    public async getAll() {
-        return this.productRepository.findAll({include: {all: true}});
+    public async getAll(minPrice = 0, maxPrice = Infinity) {
+        return this.productRepository.findAll({
+            include: { all: true }, where: {
+                price: {
+                    [Op.gte]: minPrice,
+                    [Op.lte]: maxPrice,
+                },
+            }
+        });
     }
 
     public async update(dto: UpdateProductDto) {

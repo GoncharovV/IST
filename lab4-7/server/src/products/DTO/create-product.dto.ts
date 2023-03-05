@@ -16,6 +16,9 @@ export class CreateProductDto {
 
     @ApiProperty({example: 'yandex.ru', description: 'Ссылка на изображние товара'})
     readonly image: string;
+
+    @ApiProperty({example: 1200, description: 'Цена'})
+    readonly price: number;
 }
 
 

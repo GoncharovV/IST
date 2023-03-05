@@ -4,7 +4,7 @@ import './index.scss';
 import App from './App';
 import { BrowserRouter } from 'react-router-dom';
 
-export const API_SOURCE = 'http://localhost:5000'
+export const API_SOURCE = 'http://localhost:3001'
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
