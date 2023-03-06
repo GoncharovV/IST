@@ -27,8 +27,8 @@ export class ProductsController {
     ) {
     }
 
-    @ApiOperation({summary: 'Создать товар'})
-    @ApiResponse({status: 201, type: Product})
+    @ApiOperation({ summary: 'Создать товар' })
+    @ApiResponse({ status: 201, type: Product })
     @Post()
     public createProduct(
         @Body() dto: CreateProductDto,
@@ -36,26 +36,26 @@ export class ProductsController {
         return this.productsService.create(dto);
     }
 
-    @ApiOperation({summary: 'Получить все товары'})
-    @ApiResponse({status: 200, type: [Product]})
+    @ApiOperation({ summary: 'Получить все товары' })
+    @ApiResponse({ status: 200, type: [Product] })
     @Get()
-    public getAll(@Query() query: {minPrice: string, maxPrice: string}) {
-        // console.log('FILTERS', query)
+    public getAll(@Query() query: { minPrice: string, maxPrice: string, categoryId?: string }) {
         const minPrice = Number(query.minPrice || 0)
         const maxPrice = Number(query.maxPrice || 0)
+        const categoryId = query.categoryId ? Number(query.categoryId) : undefined;
 
-        return this.productsService.getAll(minPrice, maxPrice);
+        return this.productsService.getAll(minPrice, maxPrice, categoryId);
     }
 
-    @ApiOperation({summary: 'Изменить товар'})
-    @ApiResponse({status: 200, type: Product})
+    @ApiOperation({ summary: 'Изменить товар' })
+    @ApiResponse({ status: 200, type: Product })
     @Put()
     public update(@Body() dto: UpdateProductDto,) {
         return this.productsService.update(dto)
     }
 
-    @ApiOperation({summary: 'Удалить товар'})
-    @ApiResponse({status: 200})
+    @ApiOperation({ summary: 'Удалить товар' })
+    @ApiResponse({ status: 200 })
     @Delete(':id')
     public delete(@Param('id') id: string) {
         return this.productsService.delete(+id)

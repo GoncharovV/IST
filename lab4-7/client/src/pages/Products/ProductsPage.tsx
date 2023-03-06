@@ -12,7 +12,16 @@ const ProductsPage = () => {
     const [modal, setModal] = useState(false)
 
     const [minPrice, setMinPrice] = useState<any>(0)
-    const [maxPrice, setMaxPrice] = useState<any>(15000)
+    const [maxPrice, setMaxPrice] = useState<any>(15_000_000)
+    const [selectedCategoryId, setSelectedCategoryId] = useState<any>(-1)
+
+    const [categories, setCategories] = useState<any>([])
+
+    const getCategories = async () => {
+        const categories = await axios.get(API_SOURCE + '/categories');
+
+        setCategories(categories.data);
+    };
 
 
     const [currentEdit, setCurrentEdit] = useState<any>(null)
@@ -21,7 +30,8 @@ const ProductsPage = () => {
         const products = await axios.get(API_SOURCE + '/products', {
             params: {
                 minPrice,
-                maxPrice
+                maxPrice,
+                categoryId: selectedCategoryId >= 0 ? selectedCategoryId : undefined,
             }
         });
 
@@ -30,7 +40,11 @@ const ProductsPage = () => {
 
     useEffect(() => {
         loadProducts();
-    }, [maxPrice, minPrice])
+    }, [maxPrice, minPrice, selectedCategoryId])
+
+    useEffect(() => {
+        getCategories();
+    }, [])
 
     const hideModal = () => {
         setModal(false)
@@ -75,6 +89,16 @@ const ProductsPage = () => {
                     <InputGroup.Text>Максимальная цена</InputGroup.Text>
                     <Form.Control type="number" placeholder="Максимальная цена" name="maxPrice"
                                   onChange={e => setMaxPrice(e.target.value)} value={maxPrice}/>
+
+                    <InputGroup.Text>Категория</InputGroup.Text>
+                    <Form.Select aria-label="Default select example" name='categoryId' onChange={e => setSelectedCategoryId(e.target.value)} value={selectedCategoryId}>
+                        <option value={-1}>Все</option>
+                        {
+                            categories.map(category => (
+                                <option key={category.id} value={category.id}>{category.name}</option>
+                            ))
+                        }
+                    </Form.Select>
                 </InputGroup>
             </Alert>
 

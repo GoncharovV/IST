@@ -23,14 +23,21 @@ export class ProductsService {
         return product;
     }
 
-    public async getAll(minPrice = 0, maxPrice = Infinity) {
+    public async getAll(minPrice = 0, maxPrice = Infinity, categoryId?: number) {
+        const filters: Record<string, any> = {
+            price: {
+                [Op.gte]: minPrice,
+                [Op.lte]: maxPrice,
+            },
+        };
+
+        if (categoryId) {
+            filters.categoryId = categoryId;
+        }
+
+
         return this.productRepository.findAll({
-            include: { all: true }, where: {
-                price: {
-                    [Op.gte]: minPrice,
-                    [Op.lte]: maxPrice,
-                },
-            }
+            include: { all: true }, where: filters,
         });
     }
 
